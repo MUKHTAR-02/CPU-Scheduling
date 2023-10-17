@@ -26,7 +26,8 @@ void printTable1(int processId, int arrivalTime[], int burstTime[]) {
     }
 }
 
-// void solution(int processId, int sortedExitTime[], int unSortedArray[], int unSortedArrivalTime[], int unSortedExitTime[], int turnAroundTime[], int waitingTime[]) {
+// *** program - 1 ***
+
 void solution(int processId, int unSortedExitTime[], int turnAroundTime[], int waitingTime[]) {
         for(int i=1; i<=processId; i++) {
         cout << "   " << i << "              " << unSortedExitTime[i] << "                 " << turnAroundTime[i] << "                " << waitingTime[i] << endl;
@@ -125,10 +126,6 @@ void cpuTime(int processId, int sortedArrivalTime[], int sortedBurstTime[], int 
     unSortedExitTimeFun(processId, sortedExitTime, unSortedArray, unSortedArrivalTime, unSortedBurstTime);
 }
 
-// void checker(int processId, int unSortedArrivalTime[], int unSortedBurstTime[], int unSortedArray[]) {
-    
-// }
-
 void byFCFS(int processId, int arrivalTime[], int burstTime[]) {
     int min = 1;
     int unSortedArray[processId];
@@ -188,10 +185,165 @@ void byFCFS(int processId, int arrivalTime[], int burstTime[]) {
     cpuTime(processId, sortedArrivalTime, sortedBurstTime, unSortedArrivalTime, unSortedBurstTime, unSortedArray);
 }
 
+// *** program - 2 ***
 
+void unSortedExitTimeFun2(int processId, int sortedExitTime[], int unSortedArray[], int unSortedArrivalTime[], int unSortedBurstTime[]) {
+    int unSortedExitTime[processId];
+    for(int i=1; i<=processId; i++) {
+        for(int j=1; j<=processId; j++) {
+            if(unSortedArray[i] == j) {
+                unSortedExitTime[j] = sortedExitTime[i];
+            }
+        }
+    }
+    // cout << "unSortedExitTime:" << endl;
+    // for(int i=1; i<=processId; i++) {
+    //     cout << unSortedExitTime[i] << " ";
+    // }cout << endl;
+    
+    turnAroundTimeFun(processId, unSortedExitTime, unSortedArrivalTime, unSortedBurstTime);
+}
 
-int main()
-{
+void cpuTime2(int processId, int minArrivalTime, int sortedFirstArrivalTime, int sortedFirstBurstTime, int sortedArrivalTime[], int sortedBurstTime[], int unSortedArrivalTime[], int unSortedBurstTime[], int unSortedArray[]) {
+    int i = 1;
+    int sortedExitTime[processId];
+    int unSortedExitTime[processId];
+    int count = 0;
+    int contSwitch = 0;    // context switching
+    
+    // first time m complete execution hoga arrival time ko dekh kr
+    count += sortedFirstBurstTime;
+    sortedExitTime[i] = count;
+    contSwitch++;
+    i++;
+    
+    sortedExitTime[1] = count;
+    
+    // now burst time ko dekh kr execution hoga
+    for(i=1; i<processId; i++) {
+        if(count < sortedArrivalTime[i]) {
+                count = (sortedArrivalTime[i] + sortedBurstTime[i]);
+                sortedExitTime[i+1] = count;
+                contSwitch++;
+            } else {
+                count += sortedBurstTime[i];
+                sortedExitTime[i+1] = count;
+                contSwitch++;
+            }
+    }
+    
+    cout << "sorted exit time: " << endl;
+    for(int i=1; i<=processId; i++) {
+        cout << sortedExitTime[i] << " ";
+    }cout << endl;
+    
+    cout << "Total context switching = " << contSwitch-1 << endl;
+    cout << "Total CPU Time = " << count << endl << endl;
+    
+    cout << "Here's is your answer: " << endl;
+    cout << "Process ID || Exit Time || Turn Around Time || Waiting Time" << endl;
+    
+    unSortedExitTimeFun2(processId, sortedExitTime, unSortedArray, unSortedArrivalTime, unSortedBurstTime);
+}
+
+void bySJF(int processId, int arrivalTime[], int burstTime[]) {
+    int min = 1;
+    int k = 2;
+    int minArrivalTime = 1;
+    int unSortedArray[processId];
+    int unSortedArrivalTime[processId];
+    int unSortedBurstTime[processId];
+    int sortedArrivalTime[processId - 1];
+    int sortedBurstTime[processId - 1];
+    
+    // for first element 
+    int sortedFirstArrivalTime;
+    int sortedFirstBurstTime;
+    
+    // By selection sort
+    // sorting arrival time for first element
+    for(int i=1; i<=processId; i++) {
+        if(arrivalTime[minArrivalTime] > arrivalTime[i]) {
+            minArrivalTime = i;
+        }
+    }
+    
+    // storing the first sorted value
+    sortedFirstArrivalTime = arrivalTime[minArrivalTime];
+    sortedFirstBurstTime = burstTime[minArrivalTime];
+    
+    // copy default value of AT and BT in unsorted AT and BT
+    for(int i = 1; i <= processId; i++) {
+        unSortedArrivalTime[i] = arrivalTime[i];
+        unSortedBurstTime[i] = burstTime[i];
+    }
+    
+    // sorting for burstTime
+    for(int i=1; i<processId; i++) {
+        for(int j=1; j<=processId; j++) {
+            if((burstTime[min] > burstTime[j]) && (burstTime[j] != burstTime[minArrivalTime]) && (burstTime[j] != 999)){
+                min = j;
+            }
+        }
+        //  times
+            // cout << "min = " << min << endl;
+            sortedArrivalTime[i] = arrivalTime[min];
+            sortedBurstTime[i] = burstTime[min];
+            unSortedArray[k] = min;
+            k++;
+            
+            burstTime[min] = 999;
+
+    }
+    cout << endl;
+    cout << "First process arrived: " << endl;
+    cout << "P" << minArrivalTime << endl;
+    
+    cout << "First element of arrival time (sorted): " << endl;
+    cout << sortedFirstArrivalTime << endl;
+    
+    cout << "First element of burst time of sorted AT: " << endl;
+    cout << sortedFirstBurstTime << endl;
+    
+    cout << "Accordinly to Burst Time* " << endl;
+    
+    cout << "unsorted process ID or array: " << endl;
+    unSortedArray[1] = minArrivalTime;
+    for(int k=1; k<=processId; k++) {
+        cout << unSortedArray[k] << " ";
+    }cout << endl;
+    
+    cout << "sorted arrival time: " << endl;
+    cout << sortedFirstArrivalTime << " ";
+    for(int i=1; i<processId; i++) {
+        if(sortedArrivalTime[i] != sortedFirstArrivalTime) {
+            cout << sortedArrivalTime[i] << " ";
+        }
+    }cout << endl;
+    
+    cout << "sorted burst time: " << endl;
+    cout << sortedFirstBurstTime << " ";
+    for(int i=1; i<processId; i++) {
+        if(sortedBurstTime[i] != sortedFirstBurstTime) {
+            cout << sortedBurstTime[i] << " ";
+        }
+    }cout << endl;
+    
+    cout << "unsorted arrival time: " << endl;
+    for(int i=1; i<=processId; i++) {
+        cout << unSortedArrivalTime[i] << " ";
+    }cout << endl;
+    
+    cout << "unsorted Burst Time: " << endl;
+    for(int i=1; i<=processId; i++) {
+        cout << unSortedBurstTime[i] << " ";
+    }cout << endl;
+    
+    cpuTime2(processId, minArrivalTime, sortedFirstArrivalTime, sortedFirstBurstTime, sortedArrivalTime, sortedBurstTime, unSortedArrivalTime, unSortedBurstTime, unSortedArray);
+  
+}
+
+int main() {
     // printing front-end
     frontEnd();
     
@@ -216,8 +368,8 @@ int main()
     printTable1(processId, arrivalTime, burstTime);
     
     // now man chizzz
-    byFCFS(processId, arrivalTime, burstTime);
-    // bySJF();
+    // byFCFS(processId, arrivalTime, burstTime);
+    bySJF(processId, arrivalTime, burstTime);
     // bySJFp();
     // byRobin();
     
