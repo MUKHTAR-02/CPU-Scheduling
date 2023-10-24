@@ -217,7 +217,7 @@ void cpuTime2(int processId, int minArrivalTime, int sortedFirstArrivalTime, int
     contSwitch++;
     i++;
     
-    sortedExitTime[1] = count;
+    // sortedExitTime[1] = count;
     
     // now burst time ko dekh kr execution hoga
     for(i=1; i<processId; i++) {
@@ -316,17 +316,17 @@ void bySJF(int processId, int arrivalTime[], int burstTime[]) {
     cout << "sorted arrival time: " << endl;
     cout << sortedFirstArrivalTime << " ";
     for(int i=1; i<processId; i++) {
-        if(sortedArrivalTime[i] != sortedFirstArrivalTime) {
+        // if(sortedArrivalTime[i] != sortedFirstArrivalTime) {
             cout << sortedArrivalTime[i] << " ";
-        }
+        // }
     }cout << endl;
     
     cout << "sorted burst time: " << endl;
     cout << sortedFirstBurstTime << " ";
     for(int i=1; i<processId; i++) {
-        if(sortedBurstTime[i] != sortedFirstBurstTime) {
+        // if(sortedBurstTime[i] != sortedFirstBurstTime) {
             cout << sortedBurstTime[i] << " ";
-        }
+        // }
     }cout << endl;
     
     cout << "unsorted arrival time: " << endl;
@@ -370,7 +370,7 @@ int main() {
     // now man chizzz
     // byFCFS(processId, arrivalTime, burstTime);
     bySJF(processId, arrivalTime, burstTime);
-    // bySJFp();
+    // bySJFp(processId, arrivalTime, burstTime);
     // byRobin();
     
     return 0;
